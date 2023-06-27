@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head ><center>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <script ></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        
+        * { padding: 0; margin: 0; }
+    	canvas { background: #eee; display: block; margin: 0 auto; }
+        h2{
+            
+            margin-bottom: 100px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+    <button id="stopButton">Detener</button>
+    <button id="restartButton">Reiniciar</button> <!-- Nuevo botón de reinicio -->
+    <script>
+let canvas = document.getElementById("myCanvas");
+let ctx = canvas.getContext("2d");
+
+let x = 33;
+let y = 70; 
+let dy = 1;
+let dx =1;
+let jx = 200;
+let jy = 110;
+let jx2 = 170;
+let jy2 = 150;
+
+let ax = 270;
+let ay = 110;
+let ax2 = 310;
+let ay2 = 110;
+let ax3 = 280;
+let ay3 = 110;
+let ax4 = 280;
+let ay4 = 130;
+
+//pelota x y y
+// 10 y 110
+
+//Cordenadas de la raqueta derecha
+let raquetX = 460;
+let raquetY = 110;
+
+//cordenadas de la raqueta iquierda
+let raquet2X = 10;
+let raquet2Y = 110;
+
+
+let downPressed = false;
+let upPressed = false;
+
+let downPressed2 = false;
+let upPressed2 = false;
+let puntosP1 = 0;
+let puntosP2 = 0;
+let maxPoints  = 4; // limite de puntos
+let stopDrawing = false;
+
+//dibujar texto
+function drawText(){
+//ctx.traslate(10,50);
+    ctx.fillStyle="purple";
+    ctx.fillText("Player 1:  " + puntosP1,0, 10);
+    ctx.fillText("Player 2:  " + puntosP2,420,10);
+
+}
+
+//Eventos de mobimiento de raquetas callbacks funsion como parametro de otra funcion derecha
+
+document.addEventListener("keydown",keyDownHandler, false);
+document.addEventListener("keyup",keyUpHandler, false);
+
+
+function keyDownHandler(e){
+    //alert(e.keyCode);
+    if(e.keyCode == 40)
+    {
+        downPressed = true;
+    }
+    else if(e.keyCode == 38){
+        upPressed = true;
+    }
+
+    if(e.keyCode == 87)
+    {
+        downPressed2 = true;
+    }
+    else if(e.keyCode == 83){
+        upPressed2 = true;
+    }
+}
+
+function keyUpHandler(e){
+    //alert(e.keyCode);
+    if(e.keyCode == 40)
+    {
+        downPressed = false;
+    }
+    else if(e.keyCode == 38){
+        upPressed = false;
+    }
+    if(e.keyCode == 87)
+    {
+        downPressed2 = false;
+    }
+    else if(e.keyCode == 83){
+        upPressed2 = false;
+    }
+}
+
+
+
+function drawBall()
+        {
+            ctx.beginPath();
+            ctx.arc(x, y, 10, 0, Math.PI*2);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+          
+           
+        }
+
+function drawname(){
+    /////letra j
+            ctx.beginPath();
+            ctx.rect(jx,jy,10,50);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();ctx.closePath();
+
+            ctx.beginPath();
+            ctx.rect(jx2,jy2,30,10);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();ctx.closePath();
+/////letra a
+            ctx.beginPath();
+            ctx.rect(ax,ay,10,50);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();ctx.closePath();
+
+            ctx.beginPath();
+            ctx.rect(ax2,ay2,10,50);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();ctx.closePath();
+
+            ctx.beginPath();
+            ctx.rect(ax3,ay3,40,10);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();ctx.closePath();
+
+            ctx.beginPath();
+            ctx.rect(ax4,ay4,40,10);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();ctx.closePath();
+
+
+}
+function update() {
+  // Actualizar la posición de la pelota
+  x += dx;
+  y += dy;
+
+  // Verificar las colisiones con las letras
+  colission2();
+}
+
+function colission2() {
+  // Cálculo de distancia con la letra jx
+  let distancex = Math.abs(jx - x);
+  let distancey = Math.abs(jy - y);
+
+  // Verificar colisión con la letra j
+  if (distancex < 10 && distancey < 50) {
+    dx = -dx;
+  }
+
+  // Cálculo de distancia con la letra jx2
+  let distancex2 = Math.abs(jx2 - x);
+  let distancey2 = Math.abs(jy2 - y);
+
+  // Verificar colisión con la letra jx2
+  if (distancex2 < 30 && distancey2 < 10) {
+    dx = -dx;
+  }
+
+  // Cálculo de distancia con la letra ax
+  let distanceax = Math.abs(ax - x);
+  let distanceay = Math.abs(ay - y);
+
+  // Verificar colisión con la letra ax
+  if (distanceax < 10 && distanceay < 50) {
+    dx = -dx;
+  }
+
+  // Cálculo de distancia con la letra ax2
+  let distanceax2 = Math.abs(ax2 - x);
+  let distanceay2 = Math.abs(ay2 - y);
+
+  // Verificar colisión con la letra ax2
+  if (distanceax2 < 10 && distanceay2 < 50) {
+    dx = -dx;
+  }
+
+  // Cálculo de distancia con la letra ax3
+  let distanceax3 = Math.abs(ax3 - x);
+  let distanceay3 = Math.abs(ay3 - y);
+
+  // Verificar colisión con la letra ax3
+  if (distanceax3 < 40 && distanceay3 < 10) {
+    dx = -dx;
+  }
+
+  // Cálculo de distancia con la letra ax4
+  let distanceax4 = Math.abs(ax4 - x);
+  let distanceay4 = Math.abs(ay4 - y);
+
+  // Verificar colisión con la letra ax4
+  if (distanceax4 < 40 && distanceay4 < 10) {
+    dx = -dx;
+  }
+}
+
+function drawraquet(){
+
+            //Raqueta izquierda
+            ctx.beginPath();
+            ctx.rect(raquet2X,raquet2Y,10,60);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();ctx.closePath();
+
+            //segunda raqueta derecha
+            ctx.beginPath();
+            ctx.rect(raquetX,raquetY,10,60);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();ctx.closePath();
+        
+            
+            
+        }  
+        function update() {
+  // Actualizar la posición de la pelota
+  x += dx;
+  y += dy;
+
+  // Verificar las colisiones con las raquetas
+  colission();
+}
+
+function colission() {
+  // Colisión con raqueta derecha
+  let distancex = Math.abs((raquetX + 5) - x);
+  let distancey = Math.abs((raquetY + 40) - y);
+  let distancex2 = Math.abs((raquetX + 20) - x);
+  let distax = Math.abs((raquetX + 20) - x);
+  let distay = Math.abs((raquetY + 10) - y);
+
+  if (distancex < 10 && distancey < 50) {
+    dx = -dx;
+  }
+
+  if (distancex2 < 10 && distancey < 50) {
+    dx = -dx;
+  }
+
+  if (distax < 20 && distay < 10) {
+    dx = -dx;
+  }
+
+  // Colisión con raqueta izquierda
+  let distancex3 = Math.abs(raquet2X - x);
+  let distax2 = Math.abs((raquet2X + 5) - x);
+  let distancey2 = Math.abs(raquet2Y - y);
+  let distay2 = Math.abs((raquet2Y + 40) - y);
+  let disx2 = Math.abs((raquet2X + 20) - x);
+
+  if (distancex3 < 10 && distancey2 < 60) {
+    dx = -dx;
+  }
+
+  if (distax2 < 5 && distancey2 < 60) {
+    dx = -dx;
+  }
+
+  if (disx2 < 20 && distay2 < 10) {
+    dx = -dx;
+  }
+}
+
+function checkWin() {
+  // Comprueba si alguno de los jugadores ha alcanzado el número máximo de puntos
+  if (puntosP1 == maxPoints || puntosP2 == maxPoints) {
+    // parar el juego
+    stopDrawing = true;
+
+    // Anunciar el ganador
+    var winner = puntosP1 > puntosP2 ? "Jugador 1" : "Jugador 2";
+    alert(`El ganador es ${winner} con ${puntosP1} puntos!`);
+
+    // Agregar la puntuación de la ganadora al marcador
+    scoreboard.innerHTML += `<p>${winner}: ${puntosP1}</p>`;
+
+    // Reset the players' scores
+    puntosP1 = 0;
+    puntosP2 = 0;
+  }
+}
+
+        function draw(){
+           
+            ctx.clearRect(0, 0, 480, 320);
+            drawBall();
+            drawraquet();
+            colission();
+            drawText();
+            checkWin();
+            drawname();
+            colission2(x);
+
+            if (stopDrawing) {
+    // Stop drawing
+    //clear o stop
+    ctx.stopRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+
+         
+            if(y >= 310)
+            {
+                
+                dy = dy *(-1);
+
+
+            }
+
+            if(y <= 10)
+            {
+            
+                dy = dy *(-1);
+
+            }
+
+
+            //jugador2
+            if(x > 480) {
+            puntosP1++;
+            if (puntosP1 == maxPoints) {
+                stopDrawing = true; // El juego se detiene cuando el jugador 1 alcanza el límite de puntos
+            } else {
+                resetBall();
+            }
+
+        }
+    
+        //Gol jugador 2
+        if(x < 0) {
+            puntosP2++;
+            if (puntosP2 == maxPoints) {
+                stopDrawing = true; // El juego se detiene cuando el jugador 2 alcanza el límite de puntos
+            } else {
+                resetBall();
+            }
+            
+        }
+            
+    
+            x = x +dx;
+            y = y + dy;
+
+            //Teclas Up y Down derecha
+            if(downPressed == true)
+            {
+                raquetY++
+            }
+            if(upPressed == true)
+            {
+                raquetY--
+            }
+
+            //Teclas Up y Down izquierda
+            if(downPressed2 == true)
+            {
+                raquet2Y--
+            }
+            if(upPressed2 == true)
+            {
+                raquet2Y++
+            }
+        } 
+        
+        
+        
+
+
+function resetBall() {
+        x = 240;
+        y = 170;
+        dx = -dx; // Invertir la dirección de la pelota al reiniciar
+    }
+    
+    // Agregar el evento click al botón para detener el juego
+    var stopButton = document.getElementById("stopButton");
+    stopButton.addEventListener("click", function() {
+        stopDrawing = true;
+    });
+
+    // Agregar el evento click al botón para reiniciar el juego
+    var restartButton = document.getElementById("restartButton");
+    restartButton.addEventListener("click", function() {
+        resetBall();
+        puntosP1 = 0;
+        puntosP2 = 0;
+        stopDrawing = false;
+        document.getElementById("winnerMessage").textContent = "";
+        draw();
+    });
+    
+
+ setInterval(draw, 10);
+
+    </script>
+    
+</body>
+</html>
