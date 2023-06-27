@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Juego Pong</title>
+
+        <style>
+            *{padding: 0; margin: 0;}
+            canvas{background: #7C5C95; display: block; margin: 0 auto;}
+
+            @import url('httpsL//fonts.googleapis.com/css2?family=Poppins&display=swap');
+            * {font-family: 'Poppins', sans-serif;}
+
+            body {
+                text-align: center; background-color: #42424e;
+                color: white; display: flex;
+                justify-content: center; align-items: center;
+                height: 90vh; flex-direction: column;
+                position: fixed; width: 100%;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1 style="font-size: 55px; margin: 20px;">PONG</h1>
+        <p style="font-size: 15px;"> Usar "A" y "Z" para el Jugador 1 y para el jugador 2 "Arriba" y "Abajo"</p>
+        <p id="reiniciar" style="margin: 15px;">Dar clic aqui para reiniciar el juego</p>
+        <canvas id="myCanvas" width="480" height="320"></canvas>
+
+        <script>
+            //Variables generales
+            let canvas = document.getElementById("myCanvas");
+            let ctx = canvas.getContext("2d");
+            let x = 240, y = 170;
+            let dy = 5, dx = 3;
+            let raquetX = 430, raquetY = 110;
+            let raquetX2 = 45, raquetY2 = 110;
+            let raquetX3 = 170, raquetY3 = 110;
+            let raquetX4 = 170, raquetY4 = 170;
+            let raquetX5 = 240, raquetY5 = 110;
+            let raquetX6 = 240, raquetY6 = 110;
+            let raquetX7 = 240, raquetY7 = 140;
+            let raquetX8 = 240, raquetY8 = 170;
+            let raquetX9 = 275, raquetY9 = 111;
+            let downPressed = false, upPressed = false;
+            let downPressed2 = false, upPressed2 = false;
+            let stop = false;
+            let puntosJ1 = 0, puntosJ2 = 0;
+
+            //Callback: pasar una función como parámetro a otra
+            document.addEventListener("keydown", keyDownHandler, false);
+            document.addEventListener("keyup", keyUpHandler, false);
+    
+            //Funcion para que se mueva la raqueta 1
+            function keyDownHandler(e) {
+                //alert(e.keyCode)
+                if (e.keyCode == 40) {
+                    downPressed = true;
+                }else if (e.keyCode == 38) {
+                    upPressed = true;
+                }
+
+                //Funcion para que se mueva la raqueta 2
+                if (e.keyCode == 65) {
+                    downPressed2 = true;
+                }else if (e.keyCode == 90) {
+                    upPressed2 = true;
+                }   
+            }
+    
+            //Funcion para que se mueva la raqueta 1
+            function keyUpHandler(e) {
+                //alert(e.keyCode);
+                if (e.keyCode == 40) {
+                    downPressed = false;
+                }else if (e.keyCode == 38) {
+                    upPressed = false;
+                }
+
+                //Funcion para que se mueva la raqueta 2
+                if (e.keyCode == 65) {
+                    downPressed2 = false;
+                }else if (e.keyCode == 90) {
+                    upPressed2 = false;
+                }
+            }
+        
+            //Dibujar la pelota
+            function drawBall() {
+                ctx.beginPath();
+                ctx.arc(x, y, 10, 0, Math.PI * 2);
+                ctx.fillStyle = "#ffff";
+                ctx.fill();
+                ctx.closePath();
+            }
+    
+            //Dibujar la raqueta
+            function drawRaquet() {
+                ctx.beginPath();
+                ctx.rect(raquetX, raquetY, 8, 70);
+                ctx.rect(raquetX2, raquetY2, 8, 70);
+                ctx.rect(raquetX3, raquetY3, 8, 60);
+                ctx.rect(raquetX4, raquetY4, 50, 8);
+                ctx.rect(raquetX5, raquetY5, 8, 60);
+                ctx.rect(raquetX6, raquetY6, 42, 8);
+                ctx.rect(raquetX7, raquetY7, 42, 8);
+                ctx.rect(raquetX8, raquetY8, 42, 8);
+                ctx.rect(raquetX9, raquetY9, 8, 60);
+                ctx.fillStyle = "#ffff";
+                ctx.fill();
+                ctx.closePath();
+            }
+        
+            //Colisiones de las paredes y de las raquetas
+            function collition() {
+                //Raqueta del lado izquierdo
+                let distanceX = (raquetX) - x;
+                if (distanceX < 0){distanceX = -distanceX;}
+                let distanceY = raquetY - y;
+                if (distanceX < 10 && distanceY < 10){dx = -dx;}
+            
+                //Raqueta del lado derecho
+                let distanceX2 = (raquetX2) - x;
+                if (distanceX2 < 0){distanceX2 = -distanceX2;}
+                let distanceY2 = raquetY2 - y;
+                if (distanceX2 < 10 && distanceY2 < 10){dx = -dx;}
+
+                //Raquetas de las letras
+                let distanceX3 = (raquetX3) - x;
+                if (distanceX3 < 0){distanceX3 = -distanceX3;}
+                let distanceY3 = raquetY3 - y;
+                if (distanceX3 < 10 && distanceY3 < 10){dx = -dx;}
+
+                let distanceX4 = (raquetX4) - x;
+                if (distanceX4 < 0){distanceX4 = -distanceX4;}
+                let distanceY4 = raquetY4 - y;
+                if (distanceX4 < 15 && distanceY4 < 15){dx = -dx;}
+
+                let distanceX5 = (raquetX5) - x;
+                if (distanceX5 < 0){distanceX5 = -distanceX5;}
+                let distanceY5 = raquetY5 - y;
+                if (distanceX5 < 10 && distanceY5 < 10){dx = -dx;}
+
+                let distanceX6 = (raquetX6) - x;
+                if (distanceX6 < 0){distanceX6 = -distanceX6;}
+                let distanceY6 = raquetY6 - y;
+                if (distanceX6 < 10 && distanceY6 < 10){dx = -dx;}
+                
+                let distanceX7 = (raquetX7) - x;
+                if (distanceX7 < 0){distanceX7 = -distanceX7;}
+                let distanceY7 = raquetY7 - y;
+                if (distanceX7 < 10 && distanceY7 < 10){dx = -dx;}
+
+                let distanceX8 = (raquetX8) - x;
+                if (distanceX8 < 0){distanceX8 = -distanceX8;}
+                let distanceY8 = raquetY8 - y;
+                if (distanceX8 < 10 && distanceY8 < 10){dx = -dx;}
+
+                let distanceX9 = (raquetX9) - x;
+                if (distanceX9 < 0){distanceX9 = -distanceX9;}
+                let distanceY9 = raquetY9 - y;
+                if (distanceX9 < 10 && distanceY9 < 10){dx = -dx;}
+            }
+        
+            //Dibujar el texto
+            function drawText() {
+                //Marcador
+                ctx.font = '35px Poppins, sans-serif';
+                ctx.fillStyle = '#ffff';
+                ctx.fillText( puntosJ1, 150, 60);
+                ctx.fillText( puntosJ2, 300, 60);
+
+                //Limite de puntos jugador 1
+                if (x > 480) {
+                    puntosJ1++;
+                    if (puntosJ1 >= 2) {
+                        stop = true;
+                        ctx.font = '20px Poppins, sans-serif';
+                        ctx.fillText("Jugador 1 gana", 165, 210);
+                        FinalScore();
+                    } else {
+                        resetBall();
+                    }
+                }
+
+                //Limite de puntos jugador 2
+                if (x < 0) {
+                    puntosJ2++;
+                    if (puntosJ2 >= 2) {
+                        stop = true;
+                        ctx.font = '20px Poppins, sans-serif';
+                        ctx.fillText("Jugador 2 gana", 165, 210);
+                        FinalScore();
+                    } else {
+                        resetBall();
+                    }
+                }
+
+                //Puntaje final
+                function FinalScore() {
+                    ctx.font = '15px Poppins, sans-serif';
+                    ctx.fillText("Puntaje Final: Jugador 1: " + puntosJ1 + ", Jugador 2: " + puntosJ2, 110, 230);
+                }
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, 480, 320);
+                drawBall();
+                drawRaquet();
+                collition();
+                drawText();
+            
+                if (y >= 310){dy = dy * (-1);}
+
+                if (y <= 10){dy = dy * (-1);}
+            
+                x = x + dx;
+                y = y + dy;
+            
+                //Teclas up y down raqueta izquierda
+                if (downPressed == true){raquetY += 2;}
+                if (upPressed == true){raquetY -= 2;}
+            
+                //Teclas up y down raqueta derecha
+                if (downPressed2 == true){raquetY2 -= 2;}
+                if (upPressed2 == true){raquetY2 += 2;}
+            
+                if (!stop) {requestAnimationFrame(draw);}
+            }
+        
+            function resetBall() {x = 240; y = 170; dx = -dx;}
+        
+            //Reniciar el juego
+            var reiniciar = document.getElementById("reiniciar");
+            reiniciar.addEventListener("click", function() {resetBall(); puntosJ1 = 0; puntosJ2 = 0; stop = false; draw();});
+        
+            draw();
+        </script>
+    </body>
+</html>
