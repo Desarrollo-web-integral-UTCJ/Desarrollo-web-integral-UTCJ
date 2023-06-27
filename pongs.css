@@ -1,0 +1,55 @@
+body{
+
+    background-image: url(../juego2/ima/images.jpg);
+    background-size: cover;
+}
+
+#stopButton{
+
+    width: 100px;
+    height: 50px;
+    background: yellow;
+    margin-left: 630px;
+    border-radius: 25px;
+    color: blue;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 25px;
+    border-color:red
+}
+
+#stopButton:hover{
+    background-color:red;
+    border: yellow;
+
+}
+#restartButton{
+    border-radius: 25px;
+    width: 100px;
+    height: 50px;
+    background:peachpuff;
+    margin-left: 630px;
+    color: blue;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 25px;
+    border-color: chartreuse;
+}
+
+#restartButton:hover{
+    background-color: green;
+    border: green;
+
+}
+
+#scoreBoard{
+
+    margin-left: 500px;
+    font-size: 20px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: blue;
+}
+
+.espacio{
+
+    margin-left: 615px;
+    
+}
