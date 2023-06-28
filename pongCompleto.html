@@ -1,0 +1,204 @@
+<body>
+    <div clas="espacio"><h2>Espacio</h2></div>
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+    <button id="stopButton">Detener Juego</button>
+    <button id="restartButton">Reiniciar Juego</button> <!-- Nuevo botón de reinicio -->
+    <div id="winnerMessage"></div>
+    <div id="scoreBoard"></div> <!-- Nuevo elemento para mostrar el puntaje final -->
+</body>
+<script>
+    let canvas = document.getElementById("myCanvas");
+    let ctx = canvas.getContext("2d");
+    let x = 240;
+    let y = 170;
+    let dy = 2;
+    let dx = 1;
+    let raquetx = 460; 
+    let raquety = 110;
+    let raquetx2 = 10;
+    let raquety2 = 110;
+    let downPressed = false;
+    let stopDrawing = false;
+    let upPressed = false;
+    let down2 = false;
+    let up2 = false;
+    let puntosP1 = 0;
+    let puntosP2 = 0;
+    let maxPoints = 6; // Límite de puntos para ganar el juego
+    
+    //un Listener de eventos Callback: pasa una funcion como parametro a otra
+    document.addEventListener("keydown", keyDownHandler, false);
+    document.addEventListener("keyup", keyUpHandler, false);
+
+    function keyDownHandler(e) {
+        //alert(e.keycode);
+        if (e.keyCode == 40) {
+            downPressed = true;
+        }
+        if (e.keyCode == 38) {
+            upPressed = true;
+        }
+        if (e.keyCode == 65) {
+            down2 = true;
+        }
+        if (e.keyCode == 83) {
+            up2 = true;
+        }
+    }
+
+    function keyUpHandler(e) {
+        //alert(e.keycode);
+        if (e.keyCode == 40) {
+            downPressed = false;
+        }
+        if (e.keyCode == 38) {
+            upPressed = false;
+        }
+        if (e.keyCode == 65) {
+            down2 = false;
+        }
+        if (e.keyCode == 83) {
+            up2 = false;
+        }
+    }
+
+    //Dibujar la pelota
+    function drawBall() {
+        ctx.beginPath();
+        ctx.arc(x, y, 10, 0, Math.PI * 2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    //Dibujar la Raqueta
+    function drawRaquet() {
+        ctx.beginPath();
+        ctx.rect(raquetx2, raquety2, 15, 50); //raqueta izquierda
+        ctx.rect(raquetx, raquety, 15, 50); //lado derecho
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+    
+    function colitions() {
+        let distancex = (raquetx) - x;
+        if (distancex < 0){
+            distancex = -distancex;
+        }
+        let distancey = raquety - y;
+        if (distancex < 10 && distancey < 10){
+            dx = -dx;
+        }
+        
+        //colicion con raqueta izquierda
+        let distancex2 = (raquetx2) - x;
+        if (distancex2 < 0){
+            distancex2 = -distancex2;
+        }
+        let distancey2 = raquety2 - y;
+        if (distancex2 < 10 && distancey2 < 10){
+            dx = -dx;
+        }
+    }
+    
+    //Dibujar Texto
+    function drawText() {
+        ctx.fillStyle = "Red";
+        ctx.fillText("Jugador 1 ==> " + puntosP1, 0, 10);
+        ctx.fillText("Jugador 2 ==> " + puntosP2, 400, 10);
+    }
+    
+    function draw() {
+        ctx.clearRect(0, 0, 480, 320);
+        drawBall();
+        drawRaquet();
+        colitions();
+        drawText();
+        
+        if (y >= 310){
+            dy = dy * (-1);
+        }
+        if (y <= 10){
+            dy = dy * (-1);
+        }
+        
+        //Gol Jugador 1
+        if (x > 480) {
+            puntosP1++;
+            if (puntosP1 >= maxPoints) {
+                stopDrawing = true; // El juego se detiene cuando el jugador 1 alcanza el límite de puntos
+                document.getElementById("winnerMessage").textContent = "¡Jugador 1 ganador!"; // Se muestra el mensaje de victoria
+                showFinalScore(); // Mostrar el puntaje final
+            } else {
+                resetBall();
+            }
+        }
+    
+        //Gol jugador 2
+        if (x < 0) {
+            puntosP2++;
+            if (puntosP2 >= maxPoints) {
+                stopDrawing = true; // El juego se detiene cuando el jugador 2 alcanza el límite de puntos
+                document.getElementById("winnerMessage").textContent = "¡Jugador 2 ganador!"; // Se muestra el mensaje de victoria
+                showFinalScore(); // Mostrar el puntaje final
+            } else {
+                resetBall();
+            }
+        }
+        
+        x = x + dx;
+        y = y + dy;
+        
+        //Teclas up y down
+        if (downPressed == true){
+            raquety += 2;
+        }
+        if (upPressed == true){
+            raquety -= 2;   
+        }
+        
+        //raqueta izquierda
+        if (down2 == true){
+            raquety2 -= 2;
+        }
+        if (up2 == true){
+            raquety2 += 2;
+        }
+        
+        if (!stopDrawing) {
+            requestAnimationFrame(draw);
+        }
+    }
+    
+    function resetBall() {
+        x = 240;
+        y = 170;
+        dx = -dx; // Invertir la dirección de la pelota al reiniciar
+    }
+    
+    // Agregar el evento click al botón para detener el juego
+    var stopButton = document.getElementById("stopButton");
+    stopButton.addEventListener("click", function() {
+        stopDrawing = true;
+    });
+    
+    // Agregar el evento click al botón para reiniciar el juego
+    var restartButton = document.getElementById("restartButton");
+    restartButton.addEventListener("click", function() {
+        resetBall();
+        puntosP1 = 0;
+        puntosP2 = 0;
+        stopDrawing = false;
+        document.getElementById("winnerMessage").textContent = "";
+        document.getElementById("scoreBoard").textContent = ""; // Limpiar el puntaje final al reiniciar el juego
+        draw();
+    });
+    
+    function showFinalScore() {
+        let scoreBoard = document.getElementById("scoreBoard");
+        scoreBoard.textContent = "Puntaje Final: Jugador 1 => " + puntosP1 + ", Jugador 2 => " + puntosP2;
+    }
+    
+    draw();
+</script>
