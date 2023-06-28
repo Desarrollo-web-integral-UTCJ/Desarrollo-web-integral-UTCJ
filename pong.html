@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong</title>
+    <style>
+        * { padding: 0; margin: 0; }
+        canvas { background: #000000; display: block; margin: 0 auto; }
+       
+        h2{
+            margin-bottom: 100px;
+            color: rgb(247, 247, 247);
+        }
+    </style>
+</head>
+<body>
+    <div clas="espacio"><h2></h2></div>
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+</body>
+<script>
+    let canvas = document.getElementById("myCanvas");
+let ctx = canvas.getContext("2d");
+let x = 240;
+let y = 160;
+let dy = 1;
+let dx = 1;
+let raquetX = 460;
+let raquetY = 120;
+let raquet2X = 10;
+let raquet2Y = 120;
+let downPressed = false;
+let upPressed = false;
+let wPressed = false;
+let sPressed = false;
+let raquetDY = 0;
+let raquet2DY = 0;
+let Golp1 = 0;
+let Golp2 = 0;
+const Puntuaje = 5;
+let gameover = false;
+let intervalId;
+//letra a
+let letraLX = 120;
+let letraLY = 80;
+let letraCX = 140;
+let letraCY = 75;
+let letraRX = 160;
+let letraRY = 80;
+let letraPX = 140;
+let letraPY = 100;
+//letra m
+let letraSX = 300;
+let letraSY = 180;
+let letraAX = 320;
+let letraAY = 175;
+let letraUX = 340;
+let letraUY = 200;
+let letraVX = 320;
+let letraVY = 200;
+let letraQX = 320;
+let letraQY = 225;
+// Los eventos keydown y keyup se agregan al documento para detectar cuando se presionan y sueltan las teclas correspondientes. Estos eventos modifican las variables
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+function keyDownHandler(e) {
+  if (e.keyCode == 40) {
+    downPressed = true;
+  } else if (e.keyCode == 38) {
+    upPressed = true;
+  } else if (e.keyCode == 87) {
+    wPressed = true;
+  } else if (e.keyCode == 83) {
+    sPressed = true;
+  }
+}
+function keyUpHandler(e) {
+  if (e.keyCode == 40) {
+    downPressed = false;
+  } else if (e.keyCode == 38) {
+    upPressed = false;
+  } else if (e.keyCode == 87) {
+    wPressed = false;
+  } else if (e.keyCode == 83) {
+    sPressed = false;
+  }
+}
+ // La función drawBall dibuja la pelota y las raquetas en el lienzo utilizando el contexto 2D.
+function drawBall() {
+  ctx.beginPath();
+  ctx.arc(x, y, 10, 0, Math.PI * 2);
+  ctx.fillStyle = "#f1f1f1";
+  ctx.fill();
+  ctx.closePath();
+
+  ctx.beginPath();
+  ctx.rect(raquetX, raquetY, 10, 50);
+  ctx.rect(raquet2X, raquet2Y, 10, 50);
+  ctx.fillStyle = "#f2f700";
+  ctx.fill();
+  ctx.closePath();
+
+ 
+  // Rectángulos para formar la letra "A"
+  ctx.beginPath();
+  ctx.rect(letraLX, letraLY, 10, 50);
+  ctx.rect(letraCX - 20, letraCY, 50, 10);
+  ctx.rect(letraRX, letraRY, 10, 50);
+  ctx.rect(letraPX - 20, letraPY, 50, 10);
+  ctx.fillStyle = "#0095DD";
+  ctx.fill();
+  ctx.closePath();
+
+  // Rectángulos para formar la letra "S"
+  ctx.beginPath();
+  
+  ctx.rect(letraSX, letraSY, 10, 25);
+  ctx.rect(letraAX - 20, letraAY, 50, 10);
+  ctx.rect(letraUX, letraUY, 10, 25);
+  ctx.rect(letraVX - 20, letraVY, 50, 10);
+  ctx.rect(letraQX - 20, letraQY, 50, 10);
+  ctx.fillStyle = "#0095DD";
+  ctx.fill();
+  ctx.closePath();
+
+}
+// La función drawTexto dibuja los puntajes de los jugadores en el lienzo.+
+function drawTexto() {
+  ctx.fillStyle = "yellow";
+  ctx.fillText("Player 1: " + Golp1, 0, 10);
+  ctx.fillText("Player 2: " + Golp2, 380, 10);
+}
+// La función collisions() verifica las colisiones entre la pelota y las raquetas, así como los límites del lienzo. Actualiza las variables dx y dy en caso de colisiones y maneja los puntajes y reinicios del juego.
+function collisions() {
+    let distanceX = raquetX - x;
+        if (distanceX < 0) {
+        distanceX = -distanceX;
+        }
+        let distanceY = raquetY - y;
+        if (distanceY < 0) {
+        distanceY = -distanceY;
+        }
+        if (distanceX < 20 && distanceY < 50) {
+        dx = -dx;
+        }
+        let distance2X = raquet2X - x;
+        if (distance2X < 0) {
+        distance2X = -distance2X;
+        }
+        let distance2Y = raquet2Y - y;
+        if (distance2Y < 0) {
+        distance2Y = -distance2Y;
+        }
+        if (distance2X < 20 && distance2Y < 50) {
+        dx = -dx;
+        }
+        if (y >= 310 || y <= 10) {
+        dy = -dy;
+        }
+          // Colisión con la letra "A"
+          
+          let distanceLX = letraLX - x;
+if (distanceLX < 0) {
+  distanceLX = -distanceLX;
+}
+let distanceLY = letraLY - y;
+if (distanceLY < 0) {
+  distanceLY = -distanceLY;
+}
+if (distanceLX < 10 && distanceLY < 50) {
+  dx = -dx;
+}
+
+let distanceRX = letraRX - x;
+if (distanceRX < 0) {
+  distanceRX = -distanceRX;
+}
+let distanceRY = letraRY - y;
+if (distanceRY < 0) {
+  distanceRY = -distanceRY;
+}
+if (distanceRX < 10 && distanceRY < 50) {
+  dx = -dx;
+}
+
+let distanceCX = letraCX - 20 - x;
+if (distanceCX < 0) {
+  distanceCX = -distanceCX;
+}
+let distanceCY = letraCY - y;
+if (distanceCY < 0) {
+  distanceCY = -distanceCY;
+}
+if (distanceCX < 30 && distanceCY < 10) {
+  dx = -dx;
+}
+
+let distancePX = letraPX - 20 - x;
+if (distancePX < 0) {
+  distancePX = -distancePX;
+}
+let distancePY = letraPY - y;
+if (distancePY < 0) {
+  distancePY = -distancePY;
+}
+if (distancePX < 30 && distancePY < 10) {
+  dx = -dx;
+}
+
+
+  // Colisión con la letra "S"
+  let distanceSX = letraSX - x;
+if (distanceSX < 0) {
+  distanceSX = -distanceSX;
+}
+let distanceSY = letraSY - y;
+if (distanceSY < 0) {
+  distanceSY = -distanceSY;
+}
+if (distanceSX < 10 && distanceSY < 25) {
+  dx = -dx;
+}
+
+let distanceUX = letraUX - x;
+if (distanceUX < 0) {
+  distanceUX = -distanceUX;
+}
+let distanceUY = letraUY - y;
+if (distanceUY < 0) {
+  distanceUY = -distanceUY;
+}
+if (distanceUX < 10 && distanceUY < 25) {
+  dx = -dx;
+}
+
+let distanceQX = letraQX - 20 - x;
+if (distanceQX < 0) {
+  distanceQX = -distanceQX;
+}
+let distanceQY = letraQY - y;
+if (distanceQY < 0) {
+  distanceQY = -distanceQY;
+}
+if (distanceQX < 30 && distanceQY < 10) {
+  dx = -dx;
+}
+
+let distanceAX = letraAX - 20 - x;
+if (distanceAX < 0) {
+  distanceAX = -distanceAX;
+}
+let distanceAY = letraAY - y;
+if (distanceAY < 0) {
+  distanceAY = -distanceAY;
+}
+if (distanceAX < 30 && distanceAY < 10) {
+  dx = -dx;
+}
+
+let distanceVX = letraVX - 20 - x;
+if (distanceVX < 0) {
+  distanceVX = -distanceVX;
+}
+let distanceVY = letraVY - y;
+if (distanceVY < 0) {
+  distanceVY = -distanceVY;
+}
+if (distanceVX < 30 && distanceVY < 10) {
+  dx = -dx;
+}
+
+}
+        
+        
+        if (x < 0) {
+        Golp2++;
+        x = 240;
+        y = 160;
+        raquetX = 460;
+        raquetY = 120;
+        raquet2X = 10;
+        raquet2Y = 120;
+       
+        }
+        if (x > 480) {
+        Golp1++;
+        x = 240;
+        y = 160;
+        raquetX = 460;
+        raquetY = 120;
+        raquet2X = 10;
+        raquet2Y = 120;
+        
+        }
+
+// La función updateRackets actualiza las coordenadas de las raquetas según las teclas presionadas.
+function updateRackets() {
+  if (downPressed && raquetY < 240) {
+    raquetDY = 2;
+  } else if (upPressed && raquetY > 10) {
+    raquetDY = -2;
+  } else {
+    raquetDY = 0;
+  }
+
+  if (wPressed && raquet2Y > 10) {
+    raquet2DY = -2;
+  } else if (sPressed && raquet2Y < 240) {
+    raquet2DY = 2;
+  } else {
+    raquet2DY = 0;
+  }
+
+  raquetY += raquetDY;
+  raquet2Y += raquet2DY;
+}
+// La función draw es el ciclo principal del juego. Borra el lienzo, dibuja los elementos, actualiza las posiciones y llama a collisions() para verificar colisiones.
+function draw() {
+  ctx.clearRect(0, 0, 480, 320);
+  drawBall();
+  drawTexto();
+  updateRackets();
+  x += dx;
+  y += dy;
+  collisions();
+  if (!gameover && (Golp1 === Puntuaje|| Golp2 === Puntuaje)) {
+    dx = 0;
+    dy = 0;
+    gameover = true;
+    if (Golp1 > Golp2) {
+        alert("Player 1 Gano la partida!");
+    } else {
+        alert("Player 2 Gano la partida!");
+    }
+}
+}
+function restartGame() {
+  // Reset scores
+  Golp1 = 0;
+  Golp2 = 0;
+  // Reset posision de pelota
+  x = 240;
+  y = 160;
+  // Reset posisiones de raqueta
+  raquetY = 120;
+  raquet2Y = 120;
+  // Reset ball direction and speed
+  dx = 1;
+  dy = 1;
+  // Reset game over bandera
+  gameover = false;
+
+  clearInterval(intervalId); // Detener el intervalo anterior antes de comenzar uno nuevo
+  intervalId = setInterval(draw, 10); // Iniciar un nuevo intervalo de dibujo
+}
+
+if (!gameover && (Golp1 === Puntuaje || Golp2 === Puntuaje)) {
+  dx = 0;
+  dy = 0;
+  gameover = true;
+  if (Golp1 > Golp2) {
+    alert("Player 1 Gano la partida!");
+  } else {
+    alert("Player 2 Gano la partida!");
+  }
+  restartGame();
+}
+setInterval(draw, 10);
+</script>
+</html>
